@@ -37,10 +37,6 @@ class ZernikeGPRModel:
         gpr_scale_y: bool = True,
         gpr_normalize_y: bool = True,
         gpr_optimize_hyperparams: bool = False,
-        zernike_stabilize: bool = True,
-        zernike_stabilize_center: str = 'mean',
-        zernike_stabilize_scale: str = 'max_abs',
-        zernike_stabilize_min_scale: float = 1e-8,
     ):
         self.max_order = max_order
         self.nm_pairs: Optional[List[Tuple[int, int]]] = None
@@ -55,12 +51,6 @@ class ZernikeGPRModel:
             normalize_y=gpr_normalize_y,
             optimize_hyperparams=gpr_optimize_hyperparams,
         )
-        self.zernike_fit_kwargs = {
-            "stabilize": zernike_stabilize,
-            "stabilize_center": zernike_stabilize_center,
-            "stabilize_scale": zernike_stabilize_scale,
-            "stabilize_min_scale": zernike_stabilize_min_scale,
-        }
 
     def _compute_coeff_matrix(
         self, distributions: Dict[str, np.ndarray]
@@ -86,7 +76,6 @@ class ZernikeGPRModel:
                 f,
                 self.max_order,
                 **polar_kwargs,
-                **self.zernike_fit_kwargs,
             )
             if nm_pairs is None:
                 nm_pairs = nm_pairs_curr
