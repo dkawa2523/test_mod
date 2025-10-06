@@ -1,0 +1,85 @@
+data:
+  conditions_file: "data/conditions.csv"  # path to the process condition table
+  distribution_dir: "data/distributions"   # directory containing distribution CSVs
+  id_column: "id"                          # column name for identifier
+
+preprocessing:
+  standardize: true      # whether to apply standard scaling
+  normalize: false       # whether to apply min-max scaling
+  impute: true           # whether to impute missing values
+  impute_strategy: "mean"  # imputation strategy
+  distribution_spline:
+    enabled: true
+    mode: "polar"         # "polar" (default) respects circular wafer, "cartesian" for legacy grid
+    n_radii: 24            # number of radial samples for polar grid
+    n_angles: 120          # number of angular samples for polar grid
+    # set to wafer radius (e.g., 1.0) to clip interpolation to the wafer boundary
+    radius_padding: 0.0    # optional fractional padding beyond observed radius
+    max_points: 512        # cap on total resampled points (applies to both modes)
+    smoothing: null
+    kx: 3
+    ky: 3
+    # grid_resolution: 60  # used only when mode == "cartesian"
+    # center: [0.0, 0.0]   # optional override for wafer centre (x, y)
+
+methods:
+  zernike_linear:
+    enabled: true
+    max_order: 4
+  legendre:
+    enabled: true
+    max_degree_x: 3
+    max_degree_y: 3
+  rbf:
+    enabled: true
+    n_centers: 20
+    gamma: 0.5
+    regression: "gpr"  # or "gpr"
+    random_state: 0        # seed for shared centre selection
+    ridge: 1e-6            # ridge regularisation when solving RBF weights
+    max_center_samples: 50000  # subsample limit when clustering centres
+    kernel: "RBF"          # used if regression is gpr
+    length_scale: 1.0
+    alpha: 1e-10
+  wavelet:
+    enabled: true
+    wavelet: "db2"
+    level: 2
+    n_coeffs: 20
+    regression: "gpr"   # or "gpr"
+    kernel: "RBF"
+    length_scale: 1.0
+    alpha: 1e-10
+  gpr:
+    enabled: true
+    kernel: "RBF"
+    length_scale: 1.0
+    alpha: 1e-10
+  zernike_gpr:
+    enabled: true
+    max_order: 4
+    kernel: "RBF"
+    length_scale: 1.0
+    alpha: 1e-10
+
+training:
+  test_size: 0.2
+  random_seed: 42
+
+output:
+  directory: "results"  # directory to save outputs
+
+visualization:
+  # Example:
+  sample_ids:
+     - "c00_h025_r1"
+     - "c00_h025_r2"
+  sample_ids: []  # list of wafer IDs to generate detailed sample outputs
+  heatmap:
+     grid_size: 60         # increase interpolation grid for smoother contours
+     boundary_color: "#333"  # customise wafer outline colour
+  #heatmap: {}  # optional heatmap overrides (see example above)
+  uncertainty:
+    enabled: true          # set true to export coefficient uncertainty diagnostics
+    features:
+      - "height"           # process condition columns to analyse

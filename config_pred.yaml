@@ -1,0 +1,23 @@
+data:
+  conditions_file: "data/new_conditions.csv"       # new conditions for prediction
+  id_column: "id"                                  # identifier column name
+  distribution_template: "data/template.csv"        # path to a distribution CSV used for x/y grid
+
+methods:
+  zernike_linear:
+    enabled: true
+  legendre:
+    enabled: true
+  rbf:
+    enabled: true
+  wavelet:
+    enabled: true
+  gpr:
+    enabled: true
+  zernike_gpr:
+    enabled: true
+
+models_dir: "results"   # directory containing trained models from training run
+
+output:
+  directory: "predictions"   # directory to save prediction outputs
